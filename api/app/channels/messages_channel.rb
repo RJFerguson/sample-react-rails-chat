@@ -5,5 +5,5 @@ class MessagesChannel < ApplicationCable::Channel
 
   def receive(data)
     ActionCable.server.broadcast("chat_#{params[:room]}", data)
-  endd
+  end
 end
