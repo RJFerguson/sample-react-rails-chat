@@ -5,8 +5,9 @@ import './App.css';
 class PizzaRoom extends Component {
   constructor(props) {
     super(props)
-    this.state = {messages:[]}
+    this.state = {messages:[],messageDraft:''}
     this.handleSendMessage = this.handleSendMessage.bind(this)
+    this.handleFormChange = this.handleFormChange.bind(this)
   }
 
   componentDidMount() {
@@ -18,10 +19,12 @@ class PizzaRoom extends Component {
 
   handleSendMessage(e) {
     e.preventDefault()
-    const message = document.getElementById('pizza-input').value
-    console.log(message)
-    this.props.cableApp.messagesPizza.send({content: message})
-    document.getElementById('pizza-input').value = ''
+    this.props.cableApp.messagesPizza.send({content: this.state.messageDraft})
+    this.setState({messageDraft:''})
+  }
+
+  handleFormChange(e) {
+    this.setState({messageDraft:e.target.value})
   }
 
   displayMessages() {
@@ -37,7 +40,7 @@ class PizzaRoom extends Component {
     return (
       <div>
         <form onSubmit={this.handleSendMessage}>
-          <input id="pizza-input" type="text" />
+          <input id="pizza-input" type="text" onChange={this.handleFormChange} value={this.state.messageDraft}/>
           <input type="submit" value="Send pizza msg" />
         </form>
 
@@ -53,23 +56,26 @@ class PizzaRoom extends Component {
 class TacoRoom extends Component {
   constructor(props) {
     super(props)
-    this.state = {messages:[]}
+    this.state = {messages:[],messageDraft:''}
     this.handleSendMessage = this.handleSendMessage.bind(this)
+    this.handleFormChange = this.handleFormChange.bind(this)
   }
 
   componentDidMount() {
     this.props.cableApp.messagesTaco = this.props.cableApp.cable.subscriptions.create({channel: "MessagesChannel", room: "Tacos" },
       {
-        received: (message) => this.setState({ messages: [message, ...this.state.messages,] })
+        received: (message) => this.setState({ messages: [message, ...this.state.messages] })
       })
   }
 
   handleSendMessage(e) {
     e.preventDefault()
-    const message = document.getElementById('taco-input').value
-    console.log(message)
-    this.props.cableApp.messagesTaco.send({content: message})
-    document.getElementById('taco-input').value = ''
+    this.props.cableApp.messagesTaco.send({content: this.state.messageDraft})
+    this.setState({messageDraft:''})
+  }
+
+  handleFormChange(e) {
+    this.setState({messageDraft:e.target.value})
   }
 
   displayMessages() {
@@ -85,7 +91,7 @@ class TacoRoom extends Component {
     return (
       <div>
         <form onSubmit={this.handleSendMessage}>
-          <input id="taco-input" type="text" />
+          <input id="taco-input" type="text" onChange={this.handleFormChange} value={this.state.messageDraft} />
           <input type="submit" value="Send taco msg" />
         </form>
 
