@@ -4,5 +4,12 @@ import './index.css';
 import App from './App';
 import registerServiceWorker from './registerServiceWorker';
 
-ReactDOM.render(<App />, document.getElementById('root'));
+
+import actionCable from 'actioncable'
+const CableApp = {}
+CableApp.cable = actionCable.createConsumer(`ws://${window.location.hostname}:3000/chat`)
+
+
+
+ReactDOM.render(<App cableApp={CableApp}/>, document.getElementById('root'));
 registerServiceWorker();
