@@ -1,11 +1,14 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
+import { connect } from 'react-redux'
+import { addMessage } from './actions'
 
 class PizzaRoom extends Component {
-  constructor(props) {
-    super(props)
-    this.state = {messages:[],messageDraft:''}
+  constructor({ dispatch }) {
+    super()
+    this.state = {messageDraft:''}
+    this.dispatch = dispatch
     this.handleSendMessage = this.handleSendMessage.bind(this)
     this.handleFormChange = this.handleFormChange.bind(this)
   }
@@ -13,7 +16,9 @@ class PizzaRoom extends Component {
   componentDidMount() {
     this.props.cableApp.messagesPizza = this.props.cableApp.cable.subscriptions.create({channel: "MessagesChannel", room: "Pizzas" },
       {
-        received: (message) => this.setState({ messages: [message, ...this.state.messages,] })
+        received: (message) => {
+          this.dispatch(addMessage(message))
+        }
       })
   }
 
@@ -28,7 +33,7 @@ class PizzaRoom extends Component {
   }
 
   displayMessages() {
-    const messages = this.state.messages.map( message => <li  key={message.content}>{message.content}</li> )
+    const messages = this.props.messages.map( message => <li  key={message.content}>{message.content}</li> )
     return (
       <ul>
         {messages}
@@ -51,6 +56,12 @@ class PizzaRoom extends Component {
     )
   }
 }
+
+const mapStateToProps = state => {
+  return state
+}
+
+let ReduxedPizzaRoom = connect(mapStateToProps)(PizzaRoom)
 
 
 class TacoRoom extends Component {
@@ -114,8 +125,7 @@ class App extends Component {
   render() {
     return (
       <div className="App">
-        <TacoRoom cableApp={this.props.cableApp} />
-        <PizzaRoom cableApp={this.props.cableApp} />
+        <ReduxedPizzaRoom cableApp={this.props.cableApp} />
       </div>
     );
   }
