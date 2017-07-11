@@ -5,10 +5,9 @@ import { connect } from 'react-redux'
 import { addMessage } from './actions'
 
 class PizzaRoom extends Component {
-  constructor({ dispatch }) {
+  constructor() {
     super()
     this.state = {messageDraft:''}
-    this.dispatch = dispatch
     this.handleSendMessage = this.handleSendMessage.bind(this)
     this.handleFormChange = this.handleFormChange.bind(this)
   }
@@ -17,7 +16,7 @@ class PizzaRoom extends Component {
     this.props.cableApp.messagesPizza = this.props.cableApp.cable.subscriptions.create({channel: "MessagesChannel", room: "Pizzas" },
       {
         received: (message) => {
-          this.dispatch(addMessage(message))
+          this.props.sendMessage(message)
         }
       })
   }
@@ -61,7 +60,15 @@ const mapStateToProps = state => {
   return state
 }
 
-let ReduxedPizzaRoom = connect(mapStateToProps)(PizzaRoom)
+const mapDispatchToProps = dispatch => {
+  return {
+    sendMessage: message => {
+      dispatch(addMessage(message))
+    }
+  }
+}
+
+let ReduxedPizzaRoom = connect(mapStateToProps,mapDispatchToProps)(PizzaRoom)
 
 
 class TacoRoom extends Component {
