@@ -1,5 +1,4 @@
 const messages = (state = [], action) => {
-  debugger
   switch (action.type) {
     case 'ADD_MESSAGE':
       return [
